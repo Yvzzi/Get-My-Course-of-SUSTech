@@ -1,6 +1,7 @@
 # Get My Course of SUSTech
 
 基于Selenium for Python的快速一键退/选课脚本
+部分代码由BabyXinORZ提供, 链接: https://github.com/BabyXinORZ/SUSTech-2019Autumn-course_selector
 
 | 版本号 |
 | ------ |
