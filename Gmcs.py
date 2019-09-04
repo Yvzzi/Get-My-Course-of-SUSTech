@@ -347,7 +347,7 @@ USAGE = '''Usage:
     查看版本
         {0} version
 '''
-VERSION = "Get My Course of SUSTech v1.0.0 by Yvzzi"
+VERSION = "Get My Course of SUSTech v1.0.1 by Yvzzi"
 DEBUG = False
 
 if __name__ == "__main__":
