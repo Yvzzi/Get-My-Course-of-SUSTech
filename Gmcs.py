@@ -8,7 +8,7 @@
 #  
 #  @description Eroll once or drop once
 #  @author Yvzzi
-#  @version 1.0
+#  @version 1.0.1
 #
 
 from selenium import webdriver
@@ -17,10 +17,23 @@ import json
 import sys
 import os
 import requests
+from selenium.webdriver.chrome.options import Options
+
+def __getDriver():
+    driver = None
+    if not DEBUG:
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--disable-gpu')
+        driver = webdriver.Chrome(options = options)
+    else:
+        driver = webdriver.Chrome()
+    return driver
+    
 
 def start(username, pwd, file, times, sleepTime = 0.2):
-    print("喵! 开始获取凭证GET!")
-    bs = webdriver.Chrome()
+    bs = __getDriver()
+    print("喵! 开始获取凭证!")
     
     url = 'http://jwxt.sustech.edu.cn/jsxsd/framework/xsMain.jsp'
     bs.get(url)
@@ -53,7 +66,7 @@ def start(username, pwd, file, times, sleepTime = 0.2):
     fp.write(json.dumps(cookies))
     fp.close()
     
-    print("喵! GET凭证中!")
+    print("喵! 已经GET凭证!")
     enroll(file, times, sleepTime)
     
     bs.quit()
@@ -65,7 +78,7 @@ def enroll(file, times, sleepTime = 0.2):
     strs = str.split("\n")
     
     if not os.path.exists("data/credit"):
-        print("未找到凭证文件")
+        print("呜呜, 没找到凭证文件呢")
         exit()
     fp = open("data/credit", "r+")
     creditStr = fp.read()
@@ -73,7 +86,7 @@ def enroll(file, times, sleepTime = 0.2):
     credit = json.loads(creditStr)
     
     if not os.path.exists("data/data"):
-        print("未找到数据文件")
+        print("呜呜, 没找到数据文件呢")
         exit()
     fp = open("data/data", "r+")
     dataStr = fp.read()
@@ -116,7 +129,7 @@ def drop(file):
     strs = str.split("\n")
     
     if not os.path.exists("data/credit"):
-        print("未找到凭证文件")
+        print("呜呜, 没找到凭证文件呢")
         exit()
     fp = open("data/credit", "r+")
     creditStr = fp.read()
@@ -124,7 +137,7 @@ def drop(file):
     credit = json.loads(creditStr)
     
     if not os.path.exists("data/data"):
-        print("未找到数据文件")
+        print("呜呜, 没找到数据文件呢")
         exit()
     fp = open("data/data", "r+")
     dataStr = fp.read()
@@ -161,7 +174,8 @@ def drop(file):
         time.sleep(float(sleepTime))
 
 def getCredit(username, pwd):
-    bs = webdriver.Chrome()
+    bs = __getDriver()
+    print("喵! 开始获取凭证!")
     
     url = 'http://jwxt.sustech.edu.cn/jsxsd/framework/xsMain.jsp'
     bs.get(url)
@@ -178,8 +192,8 @@ def getCredit(username, pwd):
         time.sleep(0.5)
         try:
             already = True
-            btn2 = bs.find_element_by_xpath('//*[@id="tbKxkc"]/tbody/tr[2]/td[4]/a')
-            btn2.click()
+            select_btn = bs.find_element_by_xpath('//*[@id="tbKxkc"]/tbody/tr[2]/td[4]/a')
+            select_btn.click()
 
         except Exception:
             already = False
@@ -194,10 +208,12 @@ def getCredit(username, pwd):
     fp.write(json.dumps(cookies))
     fp.close()
     
+    print("喵! 已经GET凭证!")
     bs.quit()
 
 def getData(username, pwd):
-    bs = webdriver.Chrome()
+    print("喵! 获取数据中!")
+    bs = __getDriver()
     
     # log in
     url = 'https://jwxt.sustech.edu.cn/jsxsd/framework/xsMain.jsp'
@@ -209,23 +225,21 @@ def getData(username, pwd):
     btn_login = bs.find_element_by_xpath('//*[@id="fm1"]/section[4]/input[4]')
     btn_login.click()
 
-    btn1 = bs.find_element_by_xpath('/html/body/div[5]/a[1]/div')
-    btn1.click()
+    bs.find_element_by_xpath('/html/body/div[5]/a[1]/div').click()
 
     already = False
     while not already:
         time.sleep(0.05)
         try:
             already = True
-            btn2 = bs.find_element_by_xpath('//*[@id="tbKxkc"]/tbody/tr[2]/td[4]/a')
-            btn2.click()
+            select_btn = bs.find_element_by_xpath('//*[@id="tbKxkc"]/tbody/tr[2]/td[4]/a')
+            select_btn.click()
 
         except Exception:
             already = False
             bs.refresh()
 
-    btn3 = bs.find_element_by_xpath('/html/body/div[3]/div[2]/center/input')
-    btn3.click()
+    bs.find_element_by_xpath('/html/body/div[3]/div[2]/center/input').click()
 
     # course selecting
     all = bs.window_handles
@@ -271,7 +285,7 @@ def getData(username, pwd):
                 if menu == 2:
                     tdPos = 5
                     totalPos = 6
-                print('( •̀ ω •́ )y 找到课程 {}, {}'.format(
+                print('★ 找到课程 {}, {}'.format(
                     tds[0].text.replace("\n", "/").replace(",","/"),
                     tds[1].text.replace("\n", "/").replace(",","/")
                 ))
@@ -304,7 +318,7 @@ def getData(username, pwd):
     fp.write(course)
     fp.close()
     
-    print("搜索完毕!")
+    print("喵! 搜索完毕惹!")
 
 USAGE = '''Usage:
     抓取课程信息, 课程信息建议提前抓取, 选课时将会用到, 建议在退课期间提前先抓取
@@ -334,6 +348,7 @@ USAGE = '''Usage:
         {0} version
 '''
 VERSION = "Get My Course of SUSTech v1.0.0 by Yvzzi"
+DEBUG = False
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
