@@ -26,6 +26,9 @@
 
 ###  1. 安装Python, 配置环境变量
 
+对win用户可在该[参考教程](https://www.cnblogs.com/shizhijie/p/7768778.html)中参考安装**Python3.***
+对Ubuntu用户可在该[参考教程](https://www.cnblogs.com/yjlch1016/p/8641910.html)中参考安装**Python3.***
+
 ###  2. 在Python环境配置好的情况下, 使用下列命令安装模块
 
 ```shell
